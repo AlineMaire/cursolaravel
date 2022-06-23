@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Livro;
 use App\Http\Requests\LivroRequest;
+use App\Mail\CreateLivroMail;
+use Illuminate\Support\Facades\Mail;
 
 class LivroController extends Controller
 {
@@ -24,6 +26,11 @@ class LivroController extends Controller
         $validated['user_id'] = auth()->user()->id;
         $livro = Livro::create($request->all());
         request()->session()->flash('alert-info', 'Livro cadastrado com sucesso!');
+
+        //enviar e-mail
+        Mail::queue(new CreateLivroMail($livro));
+
+
         return redirect("/livros/{$livro->id}");
     }
 
